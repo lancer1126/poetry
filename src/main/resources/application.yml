@@ -1,0 +1,15 @@
+poetry:
+  path: xxx
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://xxx:3306/poetry?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true
+    username: xxx
+    password: xxx
+    hikari:
+      keepalive-time: 120000
+      max-lifetime: 1500000
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
