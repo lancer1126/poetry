@@ -38,8 +38,9 @@ public class PoetryHandler {
         if (poetryService == null) {
             throw new RuntimeException(dirName + " 的实现类不存在");
         }
-        log.info("读取单个文件夹 - {}", dirName);
+        log.info("----------文件夹 {} 开始读取----------", dirName);
         String dirPath = poetryFilePath + "//" + dirName + "//";
         poetryService.readAndUpload(dirPath);
+        log.info("----------文件夹 {} 读取完成----------", dirName);
     }
 }

@@ -4,10 +4,8 @@ import cn.hutool.core.io.file.FileReader;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import fun.lance.poetry.enums.EraEnum;
 import fun.lance.poetry.handler.PrepareHandler;
-import fun.lance.poetry.mapper.AuthorMapper;
 import fun.lance.poetry.mapper.PoemMapper;
 import fun.lance.poetry.model.entity.Author;
 import fun.lance.poetry.model.entity.Era;
@@ -20,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CaocaoService implements IPoetryService {
+public class CaoCaoService implements IPoetryService {
 
     private final PrepareHandler prepareHandler;
     private final PoemMapper poemMapper;

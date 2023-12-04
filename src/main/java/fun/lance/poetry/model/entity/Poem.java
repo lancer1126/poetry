@@ -10,5 +10,7 @@ public class Poem {
     private Long authorId;
     private Long eraId;
     private String poemName;
+    private String anthology;
+    private String section;
     private String content;
 }

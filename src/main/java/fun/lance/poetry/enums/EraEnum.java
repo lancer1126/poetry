@@ -1,7 +1,9 @@
 package fun.lance.poetry.enums;
 
 public enum EraEnum {
-    SAN_GUO("三国");
+    WEI_ZHI("未知"),
+    SAN_GUO("三国"),
+    CHUN_QIU("春秋战国");
 
     private final String name;
 
