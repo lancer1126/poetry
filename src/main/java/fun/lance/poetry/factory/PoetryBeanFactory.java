@@ -1,6 +1,6 @@
 package fun.lance.poetry.factory;
 
-import fun.lance.poetry.service.IPoetryService;
+import fun.lance.poetry.extractor.service.IPoetryService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

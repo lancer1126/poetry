@@ -1,4 +1,4 @@
-package fun.lance.poetry.service.impl;
+package fun.lance.poetry.extractor.service.impl;
 
 import cn.hutool.core.io.file.FileReader;
 import com.alibaba.fastjson2.JSON;
@@ -6,11 +6,11 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import fun.lance.poetry.enums.EraEnum;
 import fun.lance.poetry.handler.PrepareHandler;
-import fun.lance.poetry.mapper.PoemMapper;
-import fun.lance.poetry.model.entity.Author;
-import fun.lance.poetry.model.entity.Era;
-import fun.lance.poetry.model.entity.Poem;
-import fun.lance.poetry.service.IPoetryService;
+import fun.lance.poetry.extractor.mapper.PoemMapper;
+import fun.lance.poetry.extractor.model.entity.Author;
+import fun.lance.poetry.extractor.model.entity.Era;
+import fun.lance.poetry.extractor.model.entity.Poem;
+import fun.lance.poetry.extractor.service.IPoetryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

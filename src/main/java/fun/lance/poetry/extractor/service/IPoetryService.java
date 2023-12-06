@@ -1,4 +1,4 @@
-package fun.lance.poetry.service;
+package fun.lance.poetry.extractor.service;
 
 public interface IPoetryService {
 

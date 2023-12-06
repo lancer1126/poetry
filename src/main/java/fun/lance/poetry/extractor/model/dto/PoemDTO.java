@@ -1,4 +1,4 @@
-package fun.lance.poetry.model.dto;
+package fun.lance.poetry.extractor.model.dto;
 
 import lombok.Data;
 

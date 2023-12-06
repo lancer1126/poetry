@@ -1,8 +1,8 @@
-package fun.lance.poetry.model.dto;
+package fun.lance.poetry.extractor.model.dto;
 
 import com.alibaba.fastjson2.JSONObject;
-import fun.lance.poetry.model.entity.Author;
-import fun.lance.poetry.model.entity.Era;
+import fun.lance.poetry.extractor.model.entity.Author;
+import fun.lance.poetry.extractor.model.entity.Era;
 import lombok.Data;
 import lombok.experimental.Accessors;
 

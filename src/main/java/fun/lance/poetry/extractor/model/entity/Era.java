@@ -1,4 +1,4 @@
-package fun.lance.poetry.model.entity;
+package fun.lance.poetry.extractor.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;

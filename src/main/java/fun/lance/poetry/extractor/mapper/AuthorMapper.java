@@ -1,8 +1,8 @@
-package fun.lance.poetry.mapper;
+package fun.lance.poetry.extractor.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import fun.lance.poetry.model.entity.Author;
+import fun.lance.poetry.extractor.model.entity.Author;
 
 public interface AuthorMapper extends BaseMapper<Author> {
 }

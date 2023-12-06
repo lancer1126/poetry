@@ -2,13 +2,14 @@ package fun.lance.poetry.handler;
 
 import cn.hutool.core.io.FileUtil;
 import fun.lance.poetry.factory.PoetryBeanFactory;
-import fun.lance.poetry.service.IPoetryService;
+import fun.lance.poetry.extractor.service.IPoetryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -30,6 +31,12 @@ public class PoetryHandler {
                 log.info("读取文件夹 - {}", dirName);
                 poetryService.readAndUpload(poetryFilePath + "//" + dirName + "//");
             }
+        }
+    }
+
+    public void readByNames(List<String> dirNames) {
+        for (String dirName : dirNames) {
+            readByName(dirName);
         }
     }
 
