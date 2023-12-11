@@ -36,7 +36,7 @@ public class MengXueService implements IPoetryService {
             String jsonFile = path + file.getName();
             String content = new FileReader(jsonFile).readString();
 
-            Era era = prepareHandler.getOrCreateEra(EraEnum.BEI_SONG, null);
+            Era era = prepareHandler.getOrCreateEra(EraEnum.SONG, null);
             JSONArray jsonArray = JSON.parseArray(content);
             for (int i = 0; i < jsonArray.size(); i++) {
                 PoetryLink link = new PoetryLink()

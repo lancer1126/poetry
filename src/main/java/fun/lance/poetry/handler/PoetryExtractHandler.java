@@ -50,6 +50,10 @@ public class PoetryExtractHandler {
         if (link.getSectionIndex() != null) {
             sectionStr = poetryJson.getString(link.getSectionIndex());
         }
+        String chapterStr = null;
+        if (link.getChapterIndex() != null) {
+            chapterStr = poetryJson.getString(link.getChapterIndex());
+        }
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < itemArr.size(); i++) {
@@ -61,6 +65,7 @@ public class PoetryExtractHandler {
         poem.setAuthorId(author.getAuthorId());
         poem.setEraId(era.getEraId());
         poem.setAnthology(link.getAnthology());
+        poem.setChapter(chapterStr);
         poem.setSection(sectionStr);
         poem.setContent(sb.toString());
         return poemMapper.insert(poem);

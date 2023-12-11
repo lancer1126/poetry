@@ -16,6 +16,7 @@ public class PoetryLink {
     private String eraIndex;
     private String authorIndex;
     private String titleIndex;
+    private String chapterIndex;
     private String sectionIndex;
     private String contentIndex;
 }

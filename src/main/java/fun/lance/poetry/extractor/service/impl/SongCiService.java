@@ -21,12 +21,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TangShiService extends ServiceImpl<PoemMapper, Poem> implements IPoetryService {
+public class SongCiService extends ServiceImpl<PoemMapper, Poem> implements IPoetryService {
 
     private final Map<String, Long> authorMap = new HashMap<>();
 
@@ -36,20 +39,14 @@ public class TangShiService extends ServiceImpl<PoemMapper, Poem> implements IPo
 
     @Override
     public String getName() {
-        return "全唐诗";
+        return "宋词";
     }
 
     @Override
     public void readAndUpload(String path) {
-        long total = 0;
-        Era era = prepareHandler.getOrCreateEra(EraEnum.SONG, null);
         for (File e : FileUtil.ls(path)) {
-            if (e.getName().startsWith("poet.song")) {
-                log.info("读取文件 {}", e.getName());
-                int count = readOne(era, e);
-                total += count;
-                log.info("处理了 {} ", total);
-                log.info("------------------------------");
+            if (e.getName().startsWith("author.song")) {
+                fillAuthor(e);
             }
         }
     }
@@ -57,7 +54,7 @@ public class TangShiService extends ServiceImpl<PoemMapper, Poem> implements IPo
     private void fillAuthor(File file) {
         String content = new FileReader(file).readString();
         Era era_tang = eraMapper.selectOne(new QueryWrapper<Era>()
-                .eq("era_name", EraEnum.TANG.value()));
+                .eq("era_name", EraEnum.SONG.value()));
 
         JSONArray authorArr = JSON.parseArray(content);
         for (int i = 0; i < authorArr.size(); i++) {
@@ -71,7 +68,7 @@ public class TangShiService extends ServiceImpl<PoemMapper, Poem> implements IPo
                 continue;
             }
 
-            author.setAuthorDescription(authorJson.getString("desc"));
+            author.setAuthorDescription(authorJson.getString("description"));
             authorMapper.updateById(author);
         }
     }
@@ -106,8 +103,8 @@ public class TangShiService extends ServiceImpl<PoemMapper, Poem> implements IPo
             Poem poem = new Poem();
             poem.setAuthorId(authorId);
             poem.setEraId(era.getEraId());
-            poem.setAnthology("宋诗");
-            poem.setPoemName(poemJson.getString("title"));
+            poem.setAnthology("宋词");
+            poem.setPoemName(poemJson.getString("rhythmic"));
             poem.setContent(sb.toString());
             poemList.add(poem);
         }
