@@ -7,6 +7,7 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.houbb.opencc4j.util.ZhConverterUtil;
 import fun.lance.poetry.enums.EraEnum;
 import fun.lance.poetry.extractor.mapper.AuthorMapper;
 import fun.lance.poetry.extractor.mapper.EraMapper;
@@ -36,7 +37,7 @@ public class TangShiService extends ServiceImpl<PoemMapper, Poem> implements IPo
 
     @Override
     public String getName() {
-        return "全唐诗";
+        return "御定全唐诗";
     }
 
     @Override
@@ -44,7 +45,7 @@ public class TangShiService extends ServiceImpl<PoemMapper, Poem> implements IPo
         long total = 0;
         Era era = prepareHandler.getOrCreateEra(EraEnum.SONG, null);
         for (File e : FileUtil.ls(path)) {
-            if (e.getName().startsWith("poet.song")) {
+            if (e.getName().endsWith(".json")) {
                 log.info("读取文件 {}", e.getName());
                 int count = readOne(era, e);
                 total += count;
@@ -83,8 +84,11 @@ public class TangShiService extends ServiceImpl<PoemMapper, Poem> implements IPo
         JSONArray poemArr = JSON.parseArray(content);
         for (int i = 0; i < poemArr.size(); i++) {
             JSONObject poemJson = poemArr.getJSONObject(i);
-            String authorName = poemJson.getString("author");
+            if (poemJson.isEmpty()) {
+                continue;
+            }
 
+            String authorName = ZhConverterUtil.toSimple(poemJson.getString("author"));
             Long authorId = authorMap.get(authorName);
             if (authorId == null) {
                 Author author = prepareHandler.getOrCreateAuthor(authorName, era.getEraId(), null);
@@ -93,23 +97,23 @@ public class TangShiService extends ServiceImpl<PoemMapper, Poem> implements IPo
             }
 
             StringBuilder sb = new StringBuilder();
-            JSONArray paraArr = poemJson.getJSONArray("paragraphs");
             try {
+                JSONArray paraArr = poemJson.getJSONArray("paragraphs");
                 for (int paraIdx = 0; paraIdx < paraArr.size(); paraIdx++) {
                     sb.append(paraArr.getString(paraIdx)).append("\n");
                 }
+
+                Poem poem = new Poem();
+                poem.setAuthorId(authorId);
+                poem.setEraId(era.getEraId());
+                poem.setAnthology(getName());
+                poem.setPoemName(poemJson.getString("title"));
+                poem.setContent(sb.toString());
+                poemList.add(poem);
             } catch (Exception e) {
                 log.error("", e);
-                log.error("问题内容是 " + paraArr.toString());
+                log.error("问题内容是 {}", poemJson);
             }
-
-            Poem poem = new Poem();
-            poem.setAuthorId(authorId);
-            poem.setEraId(era.getEraId());
-            poem.setAnthology("宋诗");
-            poem.setPoemName(poemJson.getString("title"));
-            poem.setContent(sb.toString());
-            poemList.add(poem);
         }
         saveBatch(poemList);
         return poemList.size();
