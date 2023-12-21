@@ -2,7 +2,7 @@ package fun.lance.poetry.handler;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import fun.lance.poetry.enums.EraEnum;
+import fun.lance.poetry.common.enums.EraEnum;
 import fun.lance.poetry.extractor.mapper.PoemMapper;
 import fun.lance.poetry.extractor.model.dto.PoetryLink;
 import fun.lance.poetry.extractor.model.entity.Author;

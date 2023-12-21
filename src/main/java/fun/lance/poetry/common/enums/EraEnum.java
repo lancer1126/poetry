@@ -1,4 +1,4 @@
-package fun.lance.poetry.enums;
+package fun.lance.poetry.common.enums;
 
 public enum EraEnum {
     WEI_ZHI("未知"),

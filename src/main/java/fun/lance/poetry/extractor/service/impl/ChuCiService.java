@@ -4,7 +4,7 @@ import cn.hutool.core.io.file.FileReader;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import fun.lance.poetry.enums.EraEnum;
+import fun.lance.poetry.common.enums.EraEnum;
 import fun.lance.poetry.handler.PrepareHandler;
 import fun.lance.poetry.extractor.mapper.PoemMapper;
 import fun.lance.poetry.extractor.model.entity.Author;

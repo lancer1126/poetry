@@ -8,7 +8,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.houbb.opencc4j.util.ZhConverterUtil;
-import fun.lance.poetry.enums.EraEnum;
+import fun.lance.poetry.common.enums.EraEnum;
 import fun.lance.poetry.extractor.mapper.AuthorMapper;
 import fun.lance.poetry.extractor.mapper.EraMapper;
 import fun.lance.poetry.extractor.mapper.PoemMapper;

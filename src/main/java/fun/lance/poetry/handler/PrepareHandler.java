@@ -2,7 +2,7 @@ package fun.lance.poetry.handler;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
-import fun.lance.poetry.enums.EraEnum;
+import fun.lance.poetry.common.enums.EraEnum;
 import fun.lance.poetry.extractor.mapper.AuthorMapper;
 import fun.lance.poetry.extractor.mapper.EraMapper;
 import fun.lance.poetry.extractor.model.entity.Author;
