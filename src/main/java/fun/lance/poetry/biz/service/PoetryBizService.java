@@ -1,9 +1,17 @@
 package fun.lance.poetry.biz.service;
 
+import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.houbb.opencc4j.util.ZhConverterUtil;
+import fun.lance.poetry.biz.model.dto.SearchDTO;
+import fun.lance.poetry.biz.model.vo.PoetryContentVO;
 import fun.lance.poetry.biz.model.vo.PoetryVO;
 import fun.lance.poetry.biz.model.vo.Recommend;
 import fun.lance.poetry.common.CommonUtil;
+import fun.lance.poetry.common.constant.SqlConst;
+import fun.lance.poetry.common.enums.PoemChar;
 import fun.lance.poetry.extractor.mapper.AuthorMapper;
 import fun.lance.poetry.extractor.model.entity.Author;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +31,8 @@ import java.util.concurrent.Future;
 @Service
 @RequiredArgsConstructor
 public class PoetryBizService {
+
+    private final static int RECOMMEND_SIZE = 1;
 
     private final JdbcTemplate jdbcTemplate;
     private final AuthorMapper authorMapper;
@@ -55,14 +65,13 @@ public class PoetryBizService {
 
         try {
             String hourEle = "'%" + hourChar + "%'";
-            String querySql = "select e.era_name as eraName, a.author_name as authorName, p.anthology, p.chapter, p.section, p.content " +
-                    " from poem p " +
-                    "         inner join era e on e.era_id = p.era_id " +
-                    "         inner join author a on a.author_id = p.author_id " +
-                    " where p.content like " + hourEle +
-                    " order by rand() limit 5;";
+            String querySql = SqlConst.POETRY_BASE +
+                    " where p.content like " + hourEle + " order by rand() limit " + RECOMMEND_SIZE;
             List<Map<String, Object>> maps = jdbcTemplate.queryForList(querySql);
-            recommend.setPoetryList(JSON.parseArray(JSON.toJSONString(maps), PoetryVO.class));
+            List<PoetryVO> poetryVOList = JSON.parseArray(JSON.toJSONString(maps), PoetryVO.class);
+            // 为结果封装多语言（简体/繁体）
+            poetryVOList.forEach(this::buildTwoFactors);
+            recommend.setPoetryList(poetryVOList);
         } catch (Exception e) {
             log.error("使用 {} 查询诗句错误", recommend.getKeyword());
             log.error("", e);
@@ -78,17 +87,46 @@ public class PoetryBizService {
         recommend.setKeyword(author.getAuthorName());
 
         try {
-            String querySql = "select e.era_name as eraName, a.author_name as authorName, p.anthology, p.chapter, p.section, p.content " +
-                    " from poem p " +
-                    "         inner join era e on e.era_id = p.era_id " +
-                    "         inner join author a on a.author_id = p.author_id " +
-                    " where p.author_id = ? order by rand() limit 5;";
+            String querySql = SqlConst.POETRY_BASE +
+                    " where p.author_id = ? order by rand() limit " + RECOMMEND_SIZE;
             List<Map<String, Object>> maps = jdbcTemplate.queryForList(querySql, author.getAuthorId());
-            recommend.setPoetryList(JSON.parseArray(JSON.toJSONString(maps), PoetryVO.class));
+            List<PoetryVO> poetryVOList = JSON.parseArray(JSON.toJSONString(maps), PoetryVO.class);
+            // 为结果封装多语言（简体/繁体）
+            poetryVOList.forEach(this::buildTwoFactors);
+            recommend.setPoetryList(poetryVOList);
         } catch (Exception e) {
             log.error("使用诗人 {} 查询诗句错误", author.getAuthorName());
             log.error("", e);
         }
         return recommend;
+    }
+
+    public Page<PoetryVO> search(SearchDTO searchDTO) {
+        return null;
+    }
+
+    /**
+     * 为结果添加简体和繁体两种语言
+     */
+    public void buildTwoFactors(PoetryVO poetryVO) {
+        if (StrUtil.isEmpty(poetryVO.getContent())) {
+            return;
+        }
+        if (poetryVO.getOriginCharType() == null) {
+            poetryVO.setOriginCharType(PoemChar.ZH_SIMP.value());
+        }
+
+        String originChar = poetryVO.getOriginCharType();
+        PoetryContentVO simple = new PoetryContentVO();
+        PoetryContentVO traditional = new PoetryContentVO();
+        if (originChar.equals(PoemChar.ZH_SIMP.value())) {
+            simple = new PoetryContentVO(poetryVO.getContent(), PoemChar.ZH_SIMP);
+            traditional = new PoetryContentVO(ZhConverterUtil.toTraditional(poetryVO.getContent()), PoemChar.ZH_TRAD);
+        } else if (originChar.equals(PoemChar.ZH_TRAD.value())) {
+           simple = new PoetryContentVO(ZhConverterUtil.toSimple(poetryVO.getContent()), PoemChar.ZH_SIMP);
+           traditional = new PoetryContentVO(poetryVO.getContent(), PoemChar.ZH_TRAD);
+        }
+
+        poetryVO.setContentWithChar(ListUtil.toList(simple, traditional));
     }
 }
