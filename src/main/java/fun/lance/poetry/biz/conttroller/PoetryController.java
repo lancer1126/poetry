@@ -1,8 +1,7 @@
 package fun.lance.poetry.biz.conttroller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.meilisearch.sdk.exceptions.MeilisearchException;
 import fun.lance.poetry.biz.model.dto.SearchDTO;
+import fun.lance.poetry.biz.model.vo.PageItem;
 import fun.lance.poetry.biz.model.vo.PoetryVO;
 import fun.lance.poetry.biz.model.vo.Recommend;
 import fun.lance.poetry.biz.service.PoetryBizService;
@@ -26,16 +25,13 @@ public class PoetryController {
         return CommonResult.success(poetryBizService.getRecommends());
     }
 
-    @GetMapping("/search")
-    public CommonResult<Page<PoetryVO>> search(@RequestParam String word,
-                                               @RequestParam Integer index,
-                                               @RequestParam Integer size) {
-        SearchDTO searchDTO = new SearchDTO().setWord(word).setIndex(index).setSize(size);
+    @PostMapping("/search")
+    public CommonResult<PageItem<PoetryVO>> search(@RequestBody SearchDTO searchDTO) {
         return CommonResult.success(poetryBizService.search(searchDTO));
     }
 
     @PostMapping("/to_meili")
-    public CommonResult<Object> uploadToMeili() throws MeilisearchException {
+    public CommonResult<Object> uploadToMeili() {
         poetryHandler.uploadToMeili();
         return CommonResult.success();
     }

@@ -3,9 +3,9 @@ package fun.lance.poetry.biz.service;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.houbb.opencc4j.util.ZhConverterUtil;
 import fun.lance.poetry.biz.model.dto.SearchDTO;
+import fun.lance.poetry.biz.model.vo.PageItem;
 import fun.lance.poetry.biz.model.vo.PoetryContentVO;
 import fun.lance.poetry.biz.model.vo.PoetryVO;
 import fun.lance.poetry.biz.model.vo.Recommend;
@@ -101,8 +101,25 @@ public class PoetryBizService {
         return recommend;
     }
 
-    public Page<PoetryVO> search(SearchDTO searchDTO) {
-        return null;
+    public PageItem<PoetryVO> search(SearchDTO searchDTO) {
+        String wordWrapper = "%" + searchDTO.getWord() + "%";
+        Map<String, Object> countMap = jdbcTemplate.queryForMap("select count(*) as cnt " +
+                " from poem where content like ?", wordWrapper);
+
+        int size = searchDTO.getSize();
+        long total = (long) countMap.get("cnt");
+        long offset = (long) searchDTO.getIndex() * searchDTO.getSize();
+        List<Map<String, Object>> pageMaps = jdbcTemplate.queryForList(SqlConst.POETRY_BASE + " where p.content like ? limit ?, ?",
+                wordWrapper, offset, size);
+        List<PoetryVO> poetryList = JSON.parseArray(JSON.toJSONString(pageMaps), PoetryVO.class);
+        poetryList.forEach(this::buildTwoFactors);
+
+        PageItem<PoetryVO> pageItem = new PageItem<>();
+        pageItem.setTotal(total);
+        pageItem.setOffset(offset);
+        pageItem.setSize(size);
+        pageItem.setRecords(poetryList);
+        return pageItem;
     }
 
     /**
@@ -127,6 +144,7 @@ public class PoetryBizService {
            traditional = new PoetryContentVO(poetryVO.getContent(), PoemChar.ZH_TRAD);
         }
 
+        poetryVO.setContent(null);
         poetryVO.setContentWithChar(ListUtil.toList(simple, traditional));
     }
 }
