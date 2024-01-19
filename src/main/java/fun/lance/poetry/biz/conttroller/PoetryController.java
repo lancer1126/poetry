@@ -1,6 +1,7 @@
 package fun.lance.poetry.biz.conttroller;
 
 import fun.lance.poetry.biz.model.dto.SearchDTO;
+import fun.lance.poetry.biz.model.dto.TranslateDTO;
 import fun.lance.poetry.biz.model.vo.PageItem;
 import fun.lance.poetry.biz.model.vo.PoetryVO;
 import fun.lance.poetry.biz.model.vo.Recommend;
@@ -34,6 +35,11 @@ public class PoetryController {
     public CommonResult<Object> uploadToMeili() {
         poetryHandler.uploadToMeili();
         return CommonResult.success();
+    }
+
+    @PostMapping("/translate")
+    public CommonResult<PoetryVO> translate(@RequestBody TranslateDTO translateDTO) {
+        return CommonResult.success(poetryBizService.translate(translateDTO));
     }
 
 }

@@ -1,10 +1,12 @@
 package fun.lance.poetry.biz.service;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.github.houbb.opencc4j.util.ZhConverterUtil;
 import fun.lance.poetry.biz.model.dto.SearchDTO;
+import fun.lance.poetry.biz.model.dto.TranslateDTO;
 import fun.lance.poetry.biz.model.vo.PageItem;
 import fun.lance.poetry.biz.model.vo.PoetryContentVO;
 import fun.lance.poetry.biz.model.vo.PoetryVO;
@@ -12,8 +14,10 @@ import fun.lance.poetry.biz.model.vo.Recommend;
 import fun.lance.poetry.common.CommonUtil;
 import fun.lance.poetry.common.constant.SqlConst;
 import fun.lance.poetry.common.enums.PoemChar;
+import fun.lance.poetry.common.exception.BizException;
 import fun.lance.poetry.extractor.mapper.AuthorMapper;
 import fun.lance.poetry.extractor.model.entity.Author;
+import fun.lance.poetry.util.CheckUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -146,5 +150,31 @@ public class PoetryBizService {
 
         poetryVO.setContent(null);
         poetryVO.setContentWithChar(ListUtil.toList(simple, traditional));
+    }
+
+    /**
+     * 根据语言获取翻译后的结果
+     */
+    public PoetryVO translate(TranslateDTO translateDTO) {
+        if (CheckUtil.containsNull(translateDTO.getPoemId(), translateDTO.getTargetLang())) {
+            throw new BizException("element is null");
+        }
+
+        String querySql = SqlConst.POETRY_BASE + " where p.opem_id = " + translateDTO.getPoemId();
+        List<Map<String, Object>> maps = jdbcTemplate.queryForList(querySql);
+        if (CollUtil.isEmpty(maps)) {
+            return null;
+        }
+
+        String targetLang = translateDTO.getTargetLang();
+        PoetryVO poetryVO = JSON.parseObject(JSON.toJSONString(maps), PoetryVO.class);
+        if (!poetryVO.getOriginCharType().equals(targetLang)) {
+            if (targetLang.equals(PoemChar.ZH_TRAD.value())) {
+                poetryVO.setContent(ZhConverterUtil.toTraditional(poetryVO.getContent()));
+            } else if (targetLang.equals(PoemChar.ZH_SIMP.value())) {
+                poetryVO.setContent(ZhConverterUtil.toSimple(poetryVO.getContent()));
+            }
+        }
+        return poetryVO;
     }
 }
